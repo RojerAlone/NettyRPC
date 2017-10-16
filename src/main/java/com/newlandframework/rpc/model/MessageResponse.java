@@ -20,17 +20,31 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 /**
- * @author tangjie<https://github.com/tang-jie>
- * @filename:MessageResponse.java
- * @description:MessageResponse功能模块
- * @blogs http://www.cnblogs.com/jietang/
- * @since 2016/10/7
+ * @author tangjie https://github.com/tang-jie
+ * @descriptions MessageResponse功能模块
+ *
+ * 返回信息
  */
 public class MessageResponse implements Serializable {
 
+    /**
+     * 请求 ID
+     */
     private String messageId;
+
+    /**
+     * 错误信息
+     */
     private String error;
+
+    /**
+     * 请求结果
+     */
     private Object result;
+
+    /**
+     * 是否返回非空
+     */
     private boolean returnNotNull;
 
     public boolean isReturnNotNull() {
@@ -65,6 +79,7 @@ public class MessageResponse implements Serializable {
         this.result = result;
     }
 
+    @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
     }

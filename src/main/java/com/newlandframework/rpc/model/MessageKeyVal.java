@@ -15,16 +15,12 @@
  */
 package com.newlandframework.rpc.model;
 
-/**
- * @filename:MessageKeyVal.java
- * @description:MessageKeyVal功能模块
- * @author tangjie<https://github.com/tang-jie>
- * @blogs http://www.cnblogs.com/jietang/
- * @since 2016/10/7
- */
-
 import java.util.Map;
 
+/**
+ * @author tangjie https://github.com/tang-jie
+ * @description MessageKeyVal功能模块
+ */
 public class MessageKeyVal {
 
     private Map<String, Object> messageKeyVal;

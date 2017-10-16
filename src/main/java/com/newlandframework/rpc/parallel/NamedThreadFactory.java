@@ -21,43 +21,49 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author tangjie<https://github.com/tang-jie>
- * @filename:NamedThreadFactory.java
- * @description:NamedThreadFactory功能模块
- * @blogs http://www.cnblogs.com/jietang/
- * @since 2016/10/7
+ * @author tangjie https://github.com/tang-jie
+ * @description NamedThreadFactory功能模块
+ *
+ * 线程池的线程工厂
  */
 public class NamedThreadFactory implements ThreadFactory {
 
-    private static final AtomicInteger threadNumber = new AtomicInteger(1);
+    /**
+     * 线程数量
+     */
+    private static final AtomicInteger THREAD_NUMBER = new AtomicInteger(1);
 
     private final AtomicInteger mThreadNum = new AtomicInteger(1);
 
     private final String prefix;
 
-    private final boolean daemoThread;
+    /**
+     * 是否是守护线程
+     */
+    private final boolean daemonThread;
 
     private final ThreadGroup threadGroup;
 
     public NamedThreadFactory() {
-        this("rpcserver-threadpool-" + threadNumber.getAndIncrement(), false);
+        this("rpcserver-threadpool-" + THREAD_NUMBER.getAndIncrement(), false);
     }
 
     public NamedThreadFactory(String prefix) {
         this(prefix, false);
     }
 
-    public NamedThreadFactory(String prefix, boolean daemo) {
+    public NamedThreadFactory(String prefix, boolean daemon) {
         this.prefix = StringUtils.isNotEmpty(prefix) ? prefix + "-thread-" : "";
-        daemoThread = daemo;
+        daemonThread = daemon;
         SecurityManager s = System.getSecurityManager();
         threadGroup = (s == null) ? Thread.currentThread().getThreadGroup() : s.getThreadGroup();
     }
 
+    @Override
     public Thread newThread(Runnable runnable) {
         String name = prefix + mThreadNum.getAndIncrement();
         Thread ret = new Thread(threadGroup, runnable, name, 0);
-        ret.setDaemon(daemoThread);
+        ret.setDaemon(daemonThread);
         return ret;
     }
 

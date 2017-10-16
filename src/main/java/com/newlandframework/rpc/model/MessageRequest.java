@@ -20,19 +20,41 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 /**
- * @author tangjie<https://github.com/tang-jie>
- * @filename:MessageRequest.java
- * @description:MessageRequest功能模块
- * @blogs http://www.cnblogs.com/jietang/
- * @since 2016/10/7
+ * @author tangjie https://github.com/tang-jie
+ * @description MessageRequest功能模块
+ *
+ * 请求信息
  */
 public class MessageRequest implements Serializable {
 
+    /**
+     * 消息 ID
+     */
     private String messageId;
+
+    /**
+     * 类名
+     */
     private String className;
+
+    /**
+     * 请求方法名
+     */
     private String methodName;
+
+    /**
+     * 参数类型
+     */
     private Class<?>[] typeParameters;
+
+    /**
+     * 参数值
+     */
     private Object[] parametersVal;
+
+    /**
+     * 是否记录请求情况
+     */
     private boolean invokeMetrics = true;
 
     public boolean isInvokeMetrics() {
@@ -83,6 +105,7 @@ public class MessageRequest implements Serializable {
         this.parametersVal = parametersVal;
     }
 
+    @Override
     public String toString() {
         return ReflectionToStringBuilder.toStringExclude(this, new String[]{"typeParameters", "parametersVal"});
     }

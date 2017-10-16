@@ -25,36 +25,33 @@ import com.newlandframework.rpc.parallel.policy.DiscardedPolicy;
 import com.newlandframework.rpc.parallel.policy.RejectedPolicy;
 import com.newlandframework.rpc.parallel.policy.RejectedPolicyType;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MalformedObjectNameException;
-import javax.management.ReflectionException;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Executor;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.*;
 
 /**
- * @author tangjie<https://github.com/tang-jie>
- * @filename:RpcThreadPool.java
- * @description:RpcThreadPool功能模块
+ * @author tangjie <https://github.com/tang-jie>
+ * @description RpcThreadPool功能模块
  * @blogs http://www.cnblogs.com/jietang/
  * @since 2016/10/7
+ *
+ * 业务线程池
  */
 public class RpcThreadPool {
-    private static final Timer timer = new Timer("ThreadPoolMonitor", true);
+    /**
+     * 用 ScheduleExecutorService 代替 Timer
+     */
+    private static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory());
     private static long monitorDelay = 100L;
     private static long monitorPeriod = 300L;
 
+    /**
+     * 拒绝策略
+     * @return
+     */
     private static RejectedExecutionHandler createPolicy() {
-        RejectedPolicyType rejectedPolicyType = RejectedPolicyType.fromString(System.getProperty(RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_REJECTED_POLICY_ATTR, "AbortPolicy"));
+        RejectedPolicyType rejectedPolicyType = RejectedPolicyType.fromString(System.getProperty(
+                RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_REJECTED_POLICY_ATTR, "AbortPolicy"));
 
         switch (rejectedPolicyType) {
             case BLOCKING_POLICY:
@@ -67,13 +64,14 @@ public class RpcThreadPool {
                 return new RejectedPolicy();
             case DISCARDED_POLICY:
                 return new DiscardedPolicy();
+            default:
+                return null;
         }
-
-        return null;
     }
 
     private static BlockingQueue<Runnable> createBlockingQueue(int queues) {
-        BlockingQueueType queueType = BlockingQueueType.fromString(System.getProperty(RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_QUEUE_NAME_ATTR, "LinkedBlockingQueue"));
+        BlockingQueueType queueType = BlockingQueueType.fromString(System.getProperty(
+                RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_QUEUE_NAME_ATTR, "LinkedBlockingQueue"));
 
         switch (queueType) {
             case LINKED_BLOCKING_QUEUE:
@@ -82,9 +80,9 @@ public class RpcThreadPool {
                 return new ArrayBlockingQueue<Runnable>(RpcSystemConfig.PARALLEL * queues);
             case SYNCHRONOUS_QUEUE:
                 return new SynchronousQueue<Runnable>();
+            default:
+                return null;
         }
-
-        return null;
     }
 
     public static Executor getExecutor(int threads, int queues) {
@@ -98,8 +96,8 @@ public class RpcThreadPool {
 
     public static Executor getExecutorWithJmx(int threads, int queues) {
         final ThreadPoolExecutor executor = (ThreadPoolExecutor) getExecutor(threads, queues);
-        timer.scheduleAtFixedRate(new TimerTask() {
-
+        scheduler.scheduleAtFixedRate(new TimerTask() {
+            @Override
             public void run() {
                 ThreadPoolStatus status = new ThreadPoolStatus();
                 status.setPoolSize(executor.getPoolSize());
@@ -112,19 +110,11 @@ public class RpcThreadPool {
 
                 try {
                     ThreadPoolMonitorProvider.monitor(status);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (MalformedObjectNameException e) {
-                    e.printStackTrace();
-                } catch (ReflectionException e) {
-                    e.printStackTrace();
-                } catch (MBeanException e) {
-                    e.printStackTrace();
-                } catch (InstanceNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        }, monitorDelay, monitorDelay);
+        }, monitorDelay, monitorDelay, TimeUnit.MILLISECONDS);
         return executor;
     }
 }
