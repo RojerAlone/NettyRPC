@@ -21,6 +21,8 @@ package com.newlandframework.rpc.core;
  * @description:RpcSystemConfig功能模块
  * @blogs http://www.cnblogs.com/jietang/
  * @since 2016/10/7
+ *
+ * RPC 服务器的各种配置
  */
 public class RpcSystemConfig {
     public static final String SYSTEM_PROPERTY_THREADPOOL_REJECTED_POLICY_ATTR = "com.newlandframework.rpc.parallel.rejected.policy";

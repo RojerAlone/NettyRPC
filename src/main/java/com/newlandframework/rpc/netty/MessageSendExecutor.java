@@ -24,6 +24,8 @@ import com.newlandframework.rpc.serialize.RpcSerializeProtocol;
  * @description:MessageSendExecutor功能模块
  * @blogs http://www.cnblogs.com/jietang/
  * @since 2016/10/7
+ *
+ * RPC 客户端执行模块
  */
 public class MessageSendExecutor {
     private static class MessageSendExecutorHolder {

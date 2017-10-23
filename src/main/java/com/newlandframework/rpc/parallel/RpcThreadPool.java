@@ -85,6 +85,12 @@ public class RpcThreadPool {
         }
     }
 
+    /**
+     * 获取一个线程池
+     * @param threads
+     * @param queues
+     * @return
+     */
     public static Executor getExecutor(int threads, int queues) {
         System.out.println("ThreadPool Core[threads:" + threads + ", queues:" + queues + "]");
         String name = "RpcThreadPool";

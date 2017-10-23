@@ -48,11 +48,21 @@ public class RpcServerLoader {
     private static volatile RpcServerLoader rpcServerLoader;
     private static final String DELIMITER = RpcSystemConfig.DELIMITER;
     private RpcSerializeProtocol serializeProtocol = RpcSerializeProtocol.JDKSERIALIZE;
+    /**
+     * 并发执行的线程数量，Max(处理器数量的 2 倍， 4)
+     */
     private static final int parallel = RpcSystemConfig.PARALLEL * 2;
+    /**
+     * Netty 线程池
+     */
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
     private static int threadNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_THREAD_NUMS;
     private static int queueNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_QUEUE_NUMS;
-    private static ListeningExecutorService threadPoolExecutor = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(threadNums, queueNums));
+    /**
+     * Guava 中的 ListeningExecutorService 提供了异步获取结果的 ListenableFuture
+     */
+    private static ListeningExecutorService threadPoolExecutor =
+            MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(threadNums, queueNums));
     private MessageSendHandler messageSendHandler = null;
     private Lock lock = new ReentrantLock();
     private Condition connectStatus = lock.newCondition();
@@ -61,8 +71,13 @@ public class RpcServerLoader {
     private RpcServerLoader() {
     }
 
+    /**
+     * 单例获取一个 RpcServerLoader 实例
+     *
+     * @return
+     */
     public static RpcServerLoader getInstance() {
-        if (rpcServerLoader == null) {
+        if (rpcServerLoader == null) { // 双重检查锁单例
             synchronized (RpcServerLoader.class) {
                 if (rpcServerLoader == null) {
                     rpcServerLoader = new RpcServerLoader();

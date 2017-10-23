@@ -29,6 +29,8 @@ import com.newlandframework.rpc.model.MessageRequest;
  * @description:MessageSendProxy功能模块
  * @blogs http://www.cnblogs.com/jietang/
  * @since 2016/10/7
+ * <p>
+ * jdk 动态代理，这里继承了 guava 包中的 AbstractInvocationHandler
  */
 public class MessageSendProxy<T> extends AbstractInvocationHandler {
 
