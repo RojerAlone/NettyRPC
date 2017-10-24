@@ -99,6 +99,7 @@ public class RpcServerLoader {
             ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(new MessageSendInitializeTask(eventLoopGroup, remoteAddr, serializeProtocol));
 
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
+                @Override
                 public void onSuccess(Boolean result) {
                     try {
                         lock.lock();
@@ -107,7 +108,7 @@ public class RpcServerLoader {
                             handlerStatus.await();
                         }
 
-                        if (result == Boolean.TRUE && messageSendHandler != null) {
+                        if (result.equals(Boolean.TRUE && messageSendHandler != null)) {
                             connectStatus.signalAll();
                         }
                     } catch (InterruptedException ex) {
@@ -117,6 +118,7 @@ public class RpcServerLoader {
                     }
                 }
 
+                @Override
                 public void onFailure(Throwable t) {
                     t.printStackTrace();
                 }
